@@ -6,6 +6,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import me.minetsh.imaging.core.IMGMode;
 import me.minetsh.imaging.core.IMGText;
 import me.minetsh.imaging.core.file.IMGAssetFileDecoder;
@@ -13,21 +18,18 @@ import me.minetsh.imaging.core.file.IMGDecoder;
 import me.minetsh.imaging.core.file.IMGFileDecoder;
 import me.minetsh.imaging.core.util.IMGUtils;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 /**
  * Created by felix on 2017/11/14 下午2:26.
  */
 
 public class IMGEditActivity extends IMGEditBaseActivity {
-
     private static final int MAX_WIDTH = 1024;
 
     private static final int MAX_HEIGHT = 1024;
 
     public static final String EXTRA_IMAGE_URI = "IMAGE_URI";
+
+    public static final String EXTRA_IMAGE_PATH = "EXTRA_IMAGE_PATH";
 
     public static final String EXTRA_IMAGE_SAVE_PATH = "IMAGE_SAVE_PATH";
 
@@ -44,10 +46,17 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         }
 
         Uri uri = intent.getParcelableExtra(EXTRA_IMAGE_URI);
-        if (uri == null) {
-            return null;
+        String path = intent.getStringExtra(EXTRA_IMAGE_PATH);
+        if (uri != null) {
+            return getBitmapToUri(uri);
         }
+        if (path != null) {
+            return getBitmapToPath(path);
+        }
+        return null;
+    }
 
+    public Bitmap getBitmapToUri(Uri uri) {
         IMGDecoder decoder = null;
 
         String path = uri.getPath();
@@ -87,8 +96,29 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         if (bitmap == null) {
             return null;
         }
-
         return bitmap;
+    }
+
+    public Bitmap getBitmapToPath(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 1;
+        options.inJustDecodeBounds = true;
+
+
+        if (options.outWidth > MAX_WIDTH) {
+            options.inSampleSize = IMGUtils.inSampleSize(Math.round(1f * options.outWidth / MAX_WIDTH));
+        }
+
+        if (options.outHeight > MAX_HEIGHT) {
+            options.inSampleSize = Math.max(options.inSampleSize,
+                    IMGUtils.inSampleSize(Math.round(1f * options.outHeight / MAX_HEIGHT)));
+        }
+        options.inJustDecodeBounds = false;
+        File file = new File(path);
+        if (file.exists()) {
+            return BitmapFactory.decodeFile(path, options);
+        }
+        return null;
     }
 
     @Override
