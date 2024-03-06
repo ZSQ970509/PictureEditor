@@ -3,6 +3,8 @@ package me.minetsh.imaging;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -116,11 +118,34 @@ public class IMGEditActivity extends IMGEditBaseActivity {
 //        }
         options.inJustDecodeBounds = false;
         Log.e("Editor","裁剪地址:"+path);
-        File file = new File(path);
-        if (file.exists()) {
-            return BitmapFactory.decodeFile(path);
+//        File file = new File(path);
+//        if (file.exists()) {
+//            return BitmapFactory.decodeFile(path);
+//        }
+
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(path);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+            default:
+                break;
+        }
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
     @Override
