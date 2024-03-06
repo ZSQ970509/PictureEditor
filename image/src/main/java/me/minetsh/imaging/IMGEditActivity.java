@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -114,9 +115,10 @@ public class IMGEditActivity extends IMGEditBaseActivity {
 //                    IMGUtils.inSampleSize(Math.round(1f * options.outHeight / MAX_HEIGHT)));
 //        }
         options.inJustDecodeBounds = false;
+        Log.e("Editor","裁剪地址:"+path);
         File file = new File(path);
         if (file.exists()) {
-            return BitmapFactory.decodeFile(path, options);
+            return BitmapFactory.decodeFile(path);
         }
         return null;
     }
