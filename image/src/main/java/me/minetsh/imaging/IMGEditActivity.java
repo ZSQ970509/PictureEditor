@@ -105,14 +105,14 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         options.inJustDecodeBounds = true;
 
 
-        if (options.outWidth > MAX_WIDTH) {
-            options.inSampleSize = IMGUtils.inSampleSize(Math.round(1f * options.outWidth / MAX_WIDTH));
-        }
-
-        if (options.outHeight > MAX_HEIGHT) {
-            options.inSampleSize = Math.max(options.inSampleSize,
-                    IMGUtils.inSampleSize(Math.round(1f * options.outHeight / MAX_HEIGHT)));
-        }
+//        if (options.outWidth > MAX_WIDTH) {
+//            options.inSampleSize = IMGUtils.inSampleSize(Math.round(1f * options.outWidth / MAX_WIDTH));
+//        }
+//
+//        if (options.outHeight > MAX_HEIGHT) {
+//            options.inSampleSize = Math.max(options.inSampleSize,
+//                    IMGUtils.inSampleSize(Math.round(1f * options.outHeight / MAX_HEIGHT)));
+//        }
         options.inJustDecodeBounds = false;
         File file = new File(path);
         if (file.exists()) {
